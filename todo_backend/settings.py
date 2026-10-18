@@ -1,18 +1,26 @@
+"""
+Django settings for the todo_backend project.
+"""
+
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables from .env file
 load_dotenv(BASE_DIR / '.env')
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-kpkog#w@x6^ygx_of&+q4r(ku$)g-xn2mp+n^6p$p7)kmtcwx&')
-
+# Security settings
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    'django-insecure-kpkog#w@x6^ygx_of&+q4r(ku$)g-xn2mp+n^6p$p7)kmtcwx&',
+)
 DEBUG = True
-
 ALLOWED_HOSTS = ['*']
 
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +57,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'todo_backend.wsgi.application'
 
+# Database configuration (PostgreSQL)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -60,17 +69,22 @@ DATABASES = {
     }
 }
 
+# Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+# Static files
 STATIC_URL = 'static/'
 
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# CORS configuration
 CORS_ALLOW_ALL_ORIGINS = True
 
+# Django REST Framework configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',

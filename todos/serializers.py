@@ -1,13 +1,24 @@
-from rest_framework import serializers
+"""
+Serializers for authentication and task management.
+"""
+
 from django.contrib.auth.models import User
+from rest_framework import serializers
+
 from .models import Todo
 
+
 class UserSerializer(serializers.ModelSerializer):
+    """Serializer for public user profile details."""
+
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
 
+
 class RegisterSerializer(serializers.ModelSerializer):
+    """Serializer for registering new users with validation."""
+
     password = serializers.CharField(write_only=True, required=True, min_length=6)
     email = serializers.EmailField(required=True)
 
@@ -29,14 +40,20 @@ class RegisterSerializer(serializers.ModelSerializer):
         return User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
-            password=validated_data['password']
+            password=validated_data['password'],
         )
 
+
 class LoginSerializer(serializers.Serializer):
+    """Serializer for user credentials validation."""
+
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True, write_only=True)
 
+
 class TodoSerializer(serializers.ModelSerializer):
+    """Serializer for Todo tasks with user-scoped protection."""
+
     class Meta:
         model = Todo
         fields = '__all__'

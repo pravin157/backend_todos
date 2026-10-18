@@ -1,6 +1,17 @@
-from django.urls import path, include
+"""
+URL routing configuration for the todos app.
+"""
+
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from .views import TodoViewSet, RegisterView, LoginView, LogoutView, CurrentUserView
+
+from .views import (
+    CurrentUserView,
+    LoginView,
+    LogoutView,
+    RegisterView,
+    TodoViewSet,
+)
 
 router = DefaultRouter()
 router.register(r'todos', TodoViewSet, basename='todo')
