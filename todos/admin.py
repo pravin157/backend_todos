@@ -1,3 +1,1 @@
-from django.contrib import admin
-
-# Register your models here.
+# Admin app not installed - todos API is standalone
