@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework import status, viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -72,10 +73,17 @@ class CurrentUserView(APIView):
 
 class TodoViewSet(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        return Todo.objects.filter(user=self.request.user)
+        user = self.request.user
+        if user and user.is_authenticated:
+            return Todo.objects.filter(Q(user=user) | Q(user__isnull=True))
+        return Todo.objects.filter(user__isnull=True)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        user = self.request.user
+        if user and user.is_authenticated:
+            serializer.save(user=user)
+        else:
+            serializer.save(user=None)
