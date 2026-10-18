@@ -1,6 +1,5 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.db.models import Q
 from rest_framework import status, viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -73,17 +72,20 @@ class CurrentUserView(APIView):
 
 class TodoViewSet(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
-    permission_classes = [permissions.AllowAny]
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
         user = self.request.user
         if user and user.is_authenticated:
-            return Todo.objects.filter(Q(user=user) | Q(user__isnull=True))
-        return Todo.objects.filter(user__isnull=True)
+            # Strictly return ONLY tasks owned by this authenticated user
+            return Todo.objects.filter(user=user)
+        # Unauthenticated requests see an empty list (no data from any user)
+        return Todo.objects.none()
 
     def perform_create(self, serializer):
-        user = self.request.user
-        if user and user.is_authenticated:
-            serializer.save(user=user)
-        else:
-            serializer.save(user=None)
+        serializer.save(user=self.request.user)
+
